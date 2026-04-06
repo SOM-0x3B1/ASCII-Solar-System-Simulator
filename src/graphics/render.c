@@ -1,17 +1,18 @@
+#include "render.h"
+
 #include <time.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "../lib/econio.h"
-#include "render.h"
+
+#include "../fs.h"
 #include "../gui/overlay.h"
 #include "../gui/edit_menu.h"
-
 #include "../gui/body_editor.h"
-#include "../fs.h"
+#include "../lib/econio.h"
 
 
-Error render_init(Screen *screen) {
+Error rndr_init(Screen *screen) {
     size_t buffSize = screen->width * screen->height * sizeof(char);
     screen->buffer = (char *) malloc(buffSize);
 
@@ -28,12 +29,12 @@ Error render_init(Screen *screen) {
     return SUCCESS;
 }
 
-void render_dispose(Screen *screen) {
+void rndr_dispose(Screen *screen) {
     free(screen->buffer);
 }
 
 
-void render_resetFPSMeasurement(Screen *screen) {
+void rndr_reset_fps_measurement(Screen *screen) {
     screen->fps = screen->targetFPS;
     screen->frameCount = 0;
     screen->frameCountResetedTime = time(NULL);
@@ -41,7 +42,7 @@ void render_resetFPSMeasurement(Screen *screen) {
 
 
 /** Updates the current FPS value and regulates simulation speed. */
-static void render_handleFPS(Program *program, Simulation *sim, Screen *screen) {
+static void rndr_handle_fps(Program *program, Simulation *sim, Screen *screen) {
     screen->frameCount++;
     if (time(NULL) - screen->frameCountResetedTime > 0) {
         screen->fps = screen->frameCount;
@@ -59,7 +60,7 @@ static void render_handleFPS(Program *program, Simulation *sim, Screen *screen) 
 }
 
 
-void render_refreshScreen(Program *program, Simulation *sim, Screen *screen, LayerStatic *ls) {
+void rndr_refresh_screen(Program *program, Simulation *sim, Screen *screen, LayerStatic *ls) {
     econio_gotoxy(0, 0);
 
     for (int y = 0; y < screen->height; ++y) {
@@ -82,21 +83,21 @@ void render_refreshScreen(Program *program, Simulation *sim, Screen *screen, Lay
     econio_flush();
     econio_gotoxy(0, 0);
 
-    render_handleFPS(program, sim, screen);
+    rndr_handle_fps(program, sim, screen);
 }
 
 
-void render_fullRender(Program *program, Simulation *sim, Screen *screen, LayerStatic *ls, Gui *gui) {
-    layer_clearAll(ls->layers, screen);
+void rndr_full_render(Program *program, Simulation *sim, Screen *screen, LayerStatic *ls, Gui *gui) {
+    lyr_clear_all(ls->layers, screen);
 
-    body_render(&ls->layerInstances, sim, screen);
-    overlay_render(program, sim, screen, &ls->layerInstances);
+    bdy_render(&ls->layerInstances, sim, screen);
+    ovl_render(program, sim, screen, &ls->layerInstances);
     if (ls->layerInstances.menuLayer.enabled)
-        editMenu_render(&ls->layerInstances, screen, gui, sim);
+        editm_render(&ls->layerInstances, screen, gui, sim);
 
     if (program->textInputDest == TEXT_INPUT_BODY_EDITOR &&
         (program->state == PROGRAM_STATE_TEXT_INPUT || program->state == PROGRAM_STATE_PLACING_BODY))
-        bodyEditor_render(program, &ls->layerInstances, screen, gui);
+        bedit_render(program, &ls->layerInstances, screen, gui);
     else if (program->state == PROGRAM_STATE_TEXT_INPUT) {
         if (program->textInputDest == TEXT_INPUT_EXPORT)
             fs_export_render(gui, &ls->layerInstances, screen);
@@ -104,5 +105,5 @@ void render_fullRender(Program *program, Simulation *sim, Screen *screen, LayerS
             fs_import_render(gui, &ls->layerInstances, screen);
     }
 
-    render_refreshScreen(program, sim, screen, ls);
+    rndr_refresh_screen(program, sim, screen, ls);
 }

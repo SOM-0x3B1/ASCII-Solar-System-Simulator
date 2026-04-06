@@ -1,12 +1,15 @@
 #include "layer.h"
-#include "string.h"
+
+#include <string.h>
 
 
 /** Replaces every character in a layers with \0. */
-static void layer_clear(Layer *l, Screen *screen);
+static inline void lyr_clear(Layer *l, Screen *screen) {
+    memset(l->text[0], 0, screen->bufferSize);
+}
 
 
-Error layer_init(LayerInstances *li, Layer **layers, Screen *screen) {
+Error lyr_init(LayerInstances *li, Layer **layers, Screen *screen) {
     li->overlayLayer.enabled = false;
     li->menuLayer.enabled = true;
     li->infoLayer.enabled = false;
@@ -30,13 +33,13 @@ Error layer_init(LayerInstances *li, Layer **layers, Screen *screen) {
         if (layers[i]->text == NULL || layers[i]->text[0] == NULL)
             return ERR_MEMORY;
 
-        layer_clear(layers[i], screen);
+        lyr_clear(layers[i], screen);
     }
 
     return SUCCESS;
 }
 
-void layer_dispose(Layer **layers) {
+void lyr_dispose(Layer **layers) {
     for (int i = 0; i < LAYER_COUNT; ++i) {
         free(layers[i]->text[0]);
         free(layers[i]->text);
@@ -44,19 +47,14 @@ void layer_dispose(Layer **layers) {
 }
 
 
-void layer_writeAtXY(Layer *l, int x, int y, char c, Screen *screen) {
+void lyr_write_at_xy(Layer *l, int x, int y, char c, Screen *screen) {
     if (x >= 0 && y >= 0 && x < screen->width && y < screen->height)
         l->text[y][x] = c;
 }
 
 
-static void layer_clear(Layer *l, Screen *screen) {
-    memset(l->text[0], 0, screen->bufferSize);
-}
-
-
-void layer_clearAll(Layer **layers, Screen *screen) {
+void lyr_clear_all(Layer **layers, Screen *screen) {
     for (int i = 0; i < LAYER_COUNT; ++i)
         if (layers[i]->enabled)
-            layer_clear(layers[i], screen);
+            lyr_clear(layers[i], screen);
 }

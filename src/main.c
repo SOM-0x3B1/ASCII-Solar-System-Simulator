@@ -1,24 +1,25 @@
 #include <stdio.h>
 #include <stdbool.h>
+
 #include "structs.h"
-#include "lib/econio.h"
+#include "fs.h"
 #include "graphics/render.h"
-#include "sim/simulator.h"
 #include "graphics/layer.h"
-#include "gui/edit_menu.h"
+#include "sim/simulator.h"
 #include "sim/body.h"
 #include "sim/body_array.h"
+#include "gui/edit_menu.h"
 #include "gui/body_editor.h"
 #include "gui/main_menu.h"
-#include "fs.h"
 #include "gui/error.h"
+#include "lib/econio.h"
 
 
-/** Initialize modules with dinamic memory management. */
-void init_modulesWithDMM(Program *program, LayerStatic *ls, Simulation *sim, Screen *screen);
+/** Initialize modules with dynamic memory management. */
+static void init_modules(Program *program, LayerStatic *ls, Simulation *sim, Screen *screen);
 
-/** Frees allocated memory, and clears the screen. */
-void exitProgram(LayerStatic *ls, Simulation sim, Screen *screen);
+/** Free allocated memory, and clear the screen. */
+static void exit_program(LayerStatic *ls, Simulation sim, Screen *screen);
 
 
 int main() {
@@ -58,26 +59,26 @@ int main() {
 
     // Attept to load settings.ini
 
-    program.error = fs_settings_loadSettings(&sim, &screen);
+    program.error = fs_load_settings(&sim, &screen);
 
     screen.bufferSize = screen.height * screen.width * sizeof(char);
 
-    init_modulesWithDMM(&program, &layerStatic, &sim, &screen);
+    init_modules(&program, &layerStatic, &sim, &screen);
 
 
     // Attempt to load main menu earth animation and title
-    if (fs_loadMainMenu(&gui) != SUCCESS) {
-        mainMenu_startSim(&program, &layerStatic.layerInstances);
-        error_render(ERR_MAIN_MENU_ART_MISSING, &screen, &layerStatic.layerInstances);
-        render_refreshScreen(&program, &sim, &screen, &layerStatic);
-        error_awaitConfirmation();
+    if (fs_load_main_menu(&gui) != SUCCESS) {
+        mmenu_start_sim(&program, &layerStatic.layerInstances);
+        err_render(ERR_MAIN_MENU_ART_MISSING, &screen, &layerStatic.layerInstances);
+        rndr_refresh_screen(&program, &sim, &screen, &layerStatic);
+        err_await_confirmation();
     }
 
 
     // Adds some default bodies to the sim
-    body_new("Mars", (Vector) {-50, 0}, (Vector) {0, -0.15}, 3, 0.15, '#', &sim);
-    body_new("Venus", (Vector) {13, 0}, (Vector) {0, 0.3}, 4, 0.815, '#', &sim);
-    body_new("Earth", (Vector) {30, 0}, (Vector) {0, 0.2}, 5, 1, '#', &sim);
+    bdy_new("Mars", (Vector) {-50, 0}, (Vector) {0, -0.15}, 3, 0.15, '#', &sim);
+    bdy_new("Venus", (Vector) {13, 0}, (Vector) {0, 0.3}, 4, 0.815, '#', &sim);
+    bdy_new("Earth", (Vector) {30, 0}, (Vector) {0, 0.2}, 5, 1, '#', &sim);
 
 
     // Main program loop
@@ -85,20 +86,20 @@ int main() {
         if (program.error == SUCCESS) {
             switch (program.state) {
                 case PROGRAM_STATE_MAIN_MENU:
-                    mainMenu_render(&screen, &layerStatic.layerInstances, &gui);
-                    mainMenu_processInput(&program, &layerStatic.layerInstances);
-                    render_refreshScreen(&program, &sim, &screen, &layerStatic);
+                    mmenu_render(&screen, &layerStatic.layerInstances, &gui);
+                    mmenu_process_input(&program, &layerStatic.layerInstances);
+                    rndr_refresh_screen(&program, &sim, &screen, &layerStatic);
                     break;
                 case PROGRAM_STATE_SIMULATION:
-                    simulation_tick(&sim);
-                    simulation_processInput(&sim, &screen, &program, &gui, &layerStatic.layerInstances);
+                    sim_tick(&sim);
+                    sim_process_input(&sim, &screen, &program, &gui, &layerStatic.layerInstances);
                     break;
                 case PROGRAM_STATE_EDIT_MENU:
-                    simulation_tick(&sim);
-                    program.error = editMenu_processInput(&program, &sim, &screen, &gui, &layerStatic.layerInstances);
+                    sim_tick(&sim);
+                    program.error = editm_process_input(&program, &sim, &screen, &gui, &layerStatic.layerInstances);
                     break;
                 case PROGRAM_STATE_PLACING_BODY:
-                    bodyEditor_processPlacementInput(&program, &gui, &sim);
+                    bedit_process_placement_input(&program, &gui, &sim);
                     break;
                 case PROGRAM_STATE_TEXT_INPUT:
                     // empty, because input processing will occur after render
@@ -106,7 +107,7 @@ int main() {
             }
 
             if (program.state != PROGRAM_STATE_MAIN_MENU)
-                render_fullRender(&program, &sim, &screen, &layerStatic, &gui);
+                rndr_full_render(&program, &sim, &screen, &layerStatic, &gui);
 
             // Speed & FPS regulator
             if (sim.pausedByUser || !sim.fullSpeed)
@@ -116,11 +117,11 @@ int main() {
             if (program.state == PROGRAM_STATE_TEXT_INPUT) {
                 switch (program.textInputDest) {
                     case TEXT_INPUT_BODY_EDITOR:
-                        program.error = bodyEditor_processTextInput(&program, &gui, &sim);
+                        program.error = bedit_process_text_input(&program, &gui, &sim);
                         break;
                     case TEXT_INPUT_IMPORT:
                     case TEXT_INPUT_EXPORT:
-                        program.error = fs_saving_processTextInput(&gui, &program, &sim, &screen, &layerStatic.layerInstances);
+                        program.error = fs_saving_process_text_input(&gui, &program, &sim, &screen, &layerStatic.layerInstances);
                         break;
                 }
             }
@@ -128,10 +129,10 @@ int main() {
 
         // Handle error
         if (program.error != SUCCESS) {
-            error_render(program.error, &screen, &layerStatic.layerInstances);
-            render_refreshScreen(&program, &sim, &screen, &layerStatic);
+            err_render(program.error, &screen, &layerStatic.layerInstances);
+            rndr_refresh_screen(&program, &sim, &screen, &layerStatic);
 
-            error_awaitConfirmation();
+            err_await_confirmation();
 
             if (program.error == ERR_MEMORY)
                 program.exiting = true;
@@ -141,27 +142,27 @@ int main() {
     }
 
 
-    exitProgram(&layerStatic, sim, &screen);
+    exit_program(&layerStatic, sim, &screen);
 
     return 0;
 }
 
 
-void init_modulesWithDMM(Program *program, LayerStatic *ls, Simulation *sim, Screen *screen) {
-    if (layer_init(&ls->layerInstances, ls->layers, screen) != SUCCESS ||
-        render_init(screen) != SUCCESS ||
-        body_init(sim) != SUCCESS) {
+static void init_modules(Program *program, LayerStatic *ls, Simulation *sim, Screen *screen) {
+    if (lyr_init(&ls->layerInstances, ls->layers, screen) != SUCCESS ||
+        rndr_init(screen) != SUCCESS ||
+        bdy_init(sim) != SUCCESS) {
         program->error = ERR_MEMORY;
     }
 }
 
 
-void exitProgram(LayerStatic *ls, Simulation sim, Screen *screen) {
+static void exit_program(LayerStatic *ls, Simulation sim, Screen *screen) {
     econio_clrscr();
     econio_gotoxy(0, 0);
     printf("Exiting...\n\n");
 
-    layer_dispose(ls->layers);
-    render_dispose(screen);
-    bodyArray_dispose(&sim.bodyArray);
+    lyr_dispose(ls->layers);
+    rndr_dispose(screen);
+    barr_dispose(&sim.bodyArray);
 }

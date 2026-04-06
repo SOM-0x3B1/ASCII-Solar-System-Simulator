@@ -1,56 +1,51 @@
 #ifndef ASCII_SSS_VECTOR_H
 #define ASCII_SSS_VECTOR_H
 
-
 #include "structs.h"
 
 
-/** Creates a vector from a length and a degree. */
-Vector vector_create(double length, double degree);
+/** Creates a vector from a length and an angle. */
+Vector vec_create(double length, double angle);
 
 /** Adds two vectors together. */
-Vector vector_add(Vector u, Vector v);
+Vector vec_add(Vector u, Vector v);
 
 /** Subracts two vectors from each other. */
-Vector vector_subtract(Vector u, Vector v);
-
-//double vector_multiply(Vector u, Vector v);
+Vector vec_subtract(Vector u, Vector v);
 
 /** Multiplies a vector with a skalar. */
-Vector vector_scalarMultiply(Vector u, double m);
+Vector vec_scalar_multiply(Vector u, double m);
 
 /** Divides a vector with a skalar. */
-Vector vector_scalarDivide(Vector u, double d);
+Vector vec_scalar_divide(Vector u, double d);
 
 /**
  * Inverts a vector.
  * @return (-a.x, -a.y)
  */
-Vector vector_invert(Vector a);
+Vector vec_invert(Vector a);
 
 /** Measures the distance between two coord. vectors. */
-double vector_distance(Vector u, Vector v);
-
-//double vector_length(Vector a);
+double vec_distance(Vector u, Vector v);
 
 //double vector_angle(Vector u, Vector v);
 
 /** Returns the unit vector of a vector between two coord. vectors. */
-Vector vector_unitVector(Vector u, Vector v);
+Vector vec_unit_vector(Vector u, Vector v);
 
 /** Converts a Vector to a Point. */
-Point vector_toPoint(Vector a);
+Point vec_to_point(Vector a);
 
 
 /** Subracts two vectors from each other. */
-Point point_subtract(Point p, Point q);
+Point pnt_subtract(Point p, Point q);
 
 /** Multiplies a vector with a skalar. */
-Point point_scalarMultiply(Point p, int m);
+Point pnt_scalar_multiply(Point p, int m);
 
-//Point point_scalarDivide(Point p, int d);
+Point pnt_scalarDivide(Point p, int d);
 
-//Vector point_ToVector(Point p);
+Vector pnt_ToVector(Point p);
 
 
 #endif //ASCII_SSS_VECTOR_H

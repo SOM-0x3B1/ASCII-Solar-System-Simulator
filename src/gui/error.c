@@ -1,11 +1,13 @@
 #include "error.h"
-#include "string.h"
-#include "../lib/econio.h"
+
+#include <string.h>
+
 #include "../graphics/drawing.h"
+#include "../lib/econio.h"
 
 
 /** Converts an error code into an informative string message. */
-static void errToString(char *res, Error error) {
+static void err_to_string(char *res, Error error) {
     switch (error) {
         case ERR_MEMORY:
             strcpy(res, "CRITICAL ERROR: Unable to allccate memory.");
@@ -43,9 +45,9 @@ static void errToString(char *res, Error error) {
     }
 }
 
-void error_render(Error error, Screen *screen, LayerInstances *li) {
+void err_render(Error error, Screen *screen, LayerInstances *li) {
     char errString[45];
-    errToString(errString, error);
+    err_to_string(errString, error);
     int msgLength = (int) strlen(errString);
 
     if (msgLength < 26)
@@ -54,18 +56,18 @@ void error_render(Error error, Screen *screen, LayerInstances *li) {
     int x1 = screen->width / 2 - msgLength / 2 - 3;
     int yCenter = screen->height / 2 + 1;
 
-    drawing_drawRectangleOutline(&li->overlayLayer, x1 - 1, yCenter - 5,
+    drw_draw_rectangle_outline(&li->overlayLayer, x1 - 1, yCenter - 5,
                                  x1 + msgLength + 5, yCenter + 2, screen);
-    int xCentrer = drawing_drawBox(&li->overlayLayer, x1, yCenter - 6,
+    int xCentrer = drw_draw_box(&li->overlayLayer, x1, yCenter - 6,
                                    x1 + msgLength + 4, yCenter + 1, "ERROR", screen);
-    drawing_drawText(&li->overlayLayer, x1 + 2, yCenter - 2, errString, screen);
-    drawing_drawText(&li->overlayLayer,
+    drw_draw_text(&li->overlayLayer, x1 + 2, yCenter - 2, errString, screen);
+    drw_draw_text(&li->overlayLayer,
                      xCentrer - (error != ERR_MEMORY ? 13 : 10), yCenter,
                      error != ERR_MEMORY ? "Press 'ENTER' to continue" : "Press 'ENTER' to abort", screen);
 }
 
 
-void error_awaitConfirmation() {
+void err_await_confirmation() {
     int key = 0;
     econio_rawmode();
     while (key != KEY_ENTER) {

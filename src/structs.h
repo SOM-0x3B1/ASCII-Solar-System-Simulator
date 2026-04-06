@@ -1,10 +1,8 @@
 #ifndef ASCII_SSS_STRUCTS_H
 #define ASCII_SSS_STRUCTS_H
 
-
 #include <stdbool.h>
 #include <time.h>
-
 
 
 //============= Vector geometry =================

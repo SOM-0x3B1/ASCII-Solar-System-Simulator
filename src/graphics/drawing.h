@@ -1,12 +1,11 @@
 #ifndef ASCII_SSS_DRAWING_H
 #define ASCII_SSS_DRAWING_H
 
-
-#include "../structs.h"
 #include "layer.h"
-#include "../lib/econio.h"
-#include "../vector.h"
 #include "render.h"
+#include "../structs.h"
+#include "../vector.h"
+#include "../lib/econio.h"
 
 
 /**
@@ -14,7 +13,7 @@
  * @param l Layer
  * @param s string
  */
-void drawing_drawText(Layer *l, int x, int y, const char *s, Screen *screen);
+void drw_draw_text(Layer *l, int x, int y, const char *s, Screen *screen);
 
 /**
  * Draws a line.
@@ -23,7 +22,7 @@ void drawing_drawText(Layer *l, int x, int y, const char *s, Screen *screen);
  * @param vertical Is the line vertical
  * @param c The characters of which the line should be built of
  */
-void drawing_drawLine(Layer *l, int x, int y, int length, bool vertical, char c, Screen *screen);
+void drw_draw_line(Layer *l, int x, int y, int length, bool vertical, char c, Screen *screen);
 
 
 /**
@@ -35,7 +34,7 @@ void drawing_drawLine(Layer *l, int x, int y, int length, bool vertical, char c,
  * @param y2 Bottom right (y)
  * @param c Fill character
  */
-void drawing_drawRectangleFill(Layer *l, int x1, int y1, int x2, int y2, char c, Screen *screen);
+void drw_draw_rectangle_fill(Layer *l, int x1, int y1, int x2, int y2, char c, Screen *screen);
 
 /**
  * Draws an unfilled rectangle (outline only).
@@ -45,7 +44,7 @@ void drawing_drawRectangleFill(Layer *l, int x1, int y1, int x2, int y2, char c,
  * @param x2 Bottom right (x)
  * @param y2 Bottom right (y)
  */
-void drawing_drawRectangleOutline(Layer *l, int x1, int y1, int x2, int y2, Screen *screen);
+void drw_draw_rectangle_outline(Layer *l, int x1, int y1, int x2, int y2, Screen *screen);
 
 /**
  * Draws a window (box) with a title.
@@ -56,7 +55,7 @@ void drawing_drawRectangleOutline(Layer *l, int x1, int y1, int x2, int y2, Scre
  * @param y2 Bottom right (y)
  * @return The horizontal (x) position of the center of the box
  */
-int drawing_drawBox(Layer *l, int x1, int y1, int x2, int y2, const char *title, Screen *screen);
+int drw_draw_box(Layer *l, int x1, int y1, int x2, int y2, const char *title, Screen *screen);
 
 /**
  * Draws a text input box.
@@ -66,7 +65,7 @@ int drawing_drawBox(Layer *l, int x1, int y1, int x2, int y2, const char *title,
  * @param text The prompt text
  * @return The coords of the cursor (next to the prompt text)
  */
-Point drawing_drawInputPrompt(Layer *l, int yCenter, const char *title, const char *text, Screen *screen);
+Point drw_draw_input_prompt(Layer *l, int yCenter, const char *title, const char *text, Screen *screen);
 
 
 #endif //ASCII_SSS_DRAWING_H

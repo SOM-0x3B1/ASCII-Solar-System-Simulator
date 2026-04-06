@@ -1,18 +1,18 @@
 #ifndef ASCII_SSS_SIMULATOR_H
 #define ASCII_SSS_SIMULATOR_H
 
+#include <stdlib.h>
 
 #include "../structs.h"
-#include <stdlib.h>
 #include "body_array.h"
 #include "../graphics/render.h"
 
 
 /** Performs all of the simulation steps. */
-void simulation_tick(Simulation *sim);
+void sim_tick(Simulation *sim);
 
 /** Processes the raw input. */
-void simulation_processInput(Simulation *sim, Screen *screen, Program *program, Gui *gui, LayerInstances *li);
+void sim_process_input(Simulation *sim, Screen *screen, Program *program, Gui *gui, LayerInstances *li);
 
 
 #endif //ASCII_SSS_SIMULATOR_H
