@@ -24,23 +24,15 @@ static void render_header(Screen *screen, LayerInstances *li) {
     drw_draw_line(&li->overlayLayer, 0, 1, screen->width, false, '_', screen);
 }
 
-
 /** Returns a string describing the current state of the program. */
-static void program_state_to_string(char *res, ProgramState s) {
+static const char* program_state_to_string(ProgramState s) {
     switch (s) {
         case PROGRAM_STATE_SIMULATION:
-        case PROGRAM_STATE_EDIT_MENU:
-            strcpy(res, "RUNNING");
-            break;
-        case PROGRAM_STATE_TEXT_INPUT:
-            strcpy(res, "PAUSED (INPUT)");
-            break;
-        case PROGRAM_STATE_PLACING_BODY:
-            strcpy(res, "PAUSED (PLACING)");
-            break;
-        case PROGRAM_STATE_MAIN_MENU:
-            strcpy(res, "PAUSED (MAIN)");
-            break;
+        case PROGRAM_STATE_EDIT_MENU:       return "RUNNING";
+        case PROGRAM_STATE_TEXT_INPUT:      return "PAUSED (INPUT)";
+        case PROGRAM_STATE_PLACING_BODY:    return "PAUSED (PLACING)";
+        case PROGRAM_STATE_MAIN_MENU:       return "PAUSED (MAIN)";
+        default:                            return "UNKNOWN ERROR";
     }
 }
 
@@ -51,8 +43,7 @@ static void render_footer(Program *program, Screen *screen, LayerInstances *li, 
     drw_draw_line(&li->overlayLayer, 0, screen->height - 2, screen->width, false, ' ', screen);
     drw_draw_text(&li->overlayLayer, 2, screen->height - 2, "Status:", screen);
 
-    char sProgramState[30];
-    program_state_to_string(sProgramState, program->state);
+    const char* sProgramState = program_state_to_string(program->state);
 
     if (!sim->pausedByUser ||
         (program->state != PROGRAM_STATE_SIMULATION && program->state != PROGRAM_STATE_EDIT_MENU)) {

@@ -7,61 +7,29 @@
 #include "../graphics/drawing.h"
 
 
-static inline void main_option_to_string(char *res, EditMenuMainOption o) {
+static const char* main_option_to_string(EditMenuMainOption o) {
     switch (o) {
-        case OPTION_ADD_BODY:
-            strcpy(res, "Add body");
-            break;
-        case OPTION_EDIT_BODY:
-            strcpy(res, "Edit body");
-            break;
-        case OPTION_DELETE_BODY:
-            strcpy(res, "Delete body");
-            break;
-        case OPTION_FOLLOW_BODY:
-            strcpy(res, "Follow body");
-            break;
-        case OPTION_TOGGLE_DETAILS:
-            strcpy(res, "Toggle details");
-            break;
-        case OPTION_TOGGLE_G_RANGE:
-            strcpy(res, "Toggle G range");
-            break;
-        case OPTION_TOGGLE_TRAILS:
-            strcpy(res, "Toggle trails");
-            break;
-        case OPTION_IMPORT_SYSTEM:
-            strcpy(res, "Import system");
-            break;
-        case OPTION_EXPORT_SYSTEM:
-            strcpy(res, "Export system");
-            break;
-        default:
-            strcpy(res, "Exit");
-            break;
+        case OPTION_ADD_BODY:       return "Add body";
+        case OPTION_EDIT_BODY:      return "Edit body";
+        case OPTION_DELETE_BODY:    return "Delete body";
+        case OPTION_FOLLOW_BODY:    return "Follow body";
+        case OPTION_TOGGLE_DETAILS: return "Toggle details";
+        case OPTION_TOGGLE_G_RANGE: return "Toggle G range";
+        case OPTION_TOGGLE_TRAILS:  return "Toggle trails";
+        case OPTION_IMPORT_SYSTEM:  return "Import system";
+        case OPTION_EXPORT_SYSTEM:  return "Export system";
+        default:                    return "Exit";
     }
 }
 
-static inline void body_option_to_string(char *res, BodyEditableProperty p) {
+static const char* body_option_to_string(BodyEditableProperty p) {
     switch (p) {
-        case BODY_PROPERTY_NAME:
-            strcpy(res, "Set name");
-            break;
-        case BODY_PROPERTY_MASS:
-            strcpy(res, "Set mass");
-            break;
-        case BODY_PROPERTY_R:
-            strcpy(res, "Set radius");
-            break;
-        case BODY_PROPERTY_POS:
-            strcpy(res, "Set position");
-            break;
-        case BODY_PROPERTY_VEL:
-            strcpy(res, "Set velocity");
-            break;
-        default:
-            strcpy(res, "");
-            break;
+        case BODY_PROPERTY_NAME: return "Set name";
+        case BODY_PROPERTY_MASS: return "Set mass";
+        case BODY_PROPERTY_R:    return "Set radius";
+        case BODY_PROPERTY_POS:  return "Set position";
+        case BODY_PROPERTY_VEL:  return "Set velocity";
+        default:                 return "";
     }
 }
 
@@ -92,8 +60,7 @@ static void render_main(LayerInstances *li, Gui *gui, Screen *screen) {
 
         int y = 5 + i + yOffset;
 
-        char sMainOption[20];
-        main_option_to_string(sMainOption, i);
+        const char* sMainOption = main_option_to_string(i);
         drw_draw_text(&li->menuLayer, screen->width - 28, y, sMainOption, screen);
         render_selection(i, y, gui, li, screen);
 
@@ -126,8 +93,7 @@ static void render_edit_properties(LayerInstances *li, Screen *screen, Simulatio
     for (int i = 0; i < bodyEditableProperty_MAX; ++i) {
         int y = 6 + i;
 
-        char sBodyOption[15];
-        body_option_to_string(sBodyOption, i);
+        const char* sBodyOption = body_option_to_string(i);
         drw_draw_text(&li->menuLayer, screen->width - 28, y, sBodyOption, screen);
         render_selection(i, y, gui, li, screen);
     }

@@ -7,47 +7,24 @@
 
 
 /** Converts an error code into an informative string message. */
-static void err_to_string(char *res, Error error) {
+static const char* err_to_string(Error error) {
     switch (error) {
-        case ERR_MEMORY:
-            strcpy(res, "CRITICAL ERROR: Unable to allccate memory.");
-            break;
-        case ERR_SETTINGS_OPEN_FILE:
-            strcpy(res, "Unable to open settings.ini.");
-            break;
-        case ERR_SETTINGS_PARAMETER:
-            strcpy(res, "Invalid parameter name in settings.");
-            break;
-        case ERR_SETTIGNS_VALUE:
-            strcpy(res, "Invalid value in settings.");
-            break;
-        case ERR_FS_FILENAME:
-            strcpy(res, "Invalid file name.");
-            break;
-        case ERR_ADDBODY_VALUE:
-            strcpy(res, "Invalid body parameter.");
-            break;
-        case ERR_EXPORT_WRITE:
-            strcpy(res, "Unable to create export file.");
-            break;
-        case ERR_IMPORT_OPEN_FILE:
-            strcpy(res, "Unable to open import file.");
-            break;
-        case ERR_IMPORT_VALUE:
-            strcpy(res, "Invalid body parameter in import file.");
-            break;
-        case ERR_MAIN_MENU_ART_MISSING:
-            strcpy(res, "Missing main menu art files.");
-            break;
-        default:
-            strcpy(res, "Unkown error.");
-            break;
+        case ERR_MEMORY:                return "CRITICAL ERROR: Unable to allccate memory.";
+        case ERR_SETTINGS_OPEN_FILE:    return "Unable to open settings.ini.";
+        case ERR_SETTINGS_PARAMETER:    return "Invalid parameter name in settings.";
+        case ERR_SETTIGNS_VALUE:        return "Invalid value in settings.";
+        case ERR_FS_FILENAME:           return "Invalid file name.";
+        case ERR_ADDBODY_VALUE:         return "Invalid body parameter.";
+        case ERR_EXPORT_WRITE:          return "Unable to create export file.";
+        case ERR_IMPORT_OPEN_FILE:      return "Unable to open import file.";
+        case ERR_IMPORT_VALUE:          return "Invalid body parameter in import file.";
+        case ERR_MAIN_MENU_ART_MISSING: return "Missing main menu art files.";
+        default:                        return "Unkown error.";
     }
 }
 
 void err_render(Error error, Screen *screen, LayerInstances *li) {
-    char errString[45];
-    err_to_string(errString, error);
+    const char* errString = err_to_string(error);
     int msgLength = (int) strlen(errString);
 
     if (msgLength < 26)
