@@ -8,20 +8,12 @@
 
 
 /** Returns the input promt text based on the bodyeditor's current state. */
-static void get_prompt(char *res, BodyEditorState s) {
+static const char* get_prompt(BodyEditorState s) {
     switch (s) {
-        case BODY_SET_NAME:
-            strcpy(res, "Name:");
-            break;
-        case BODY_SET_MASS:
-            strcpy(res, "Mass (relative to Earth):");
-            break;
-        case BODY_SET_R:
-            strcpy(res, "Radius:");
-            break;
-        default:
-            strcpy(res, "Velocity (speed, angle):");
-            break;
+        case BODY_SET_NAME: return "Name:";
+        case BODY_SET_MASS: return "Mass (relative to Earth):";
+        case BODY_SET_R:    return "Radius:";
+        default:            return "Velocity (speed, angle):";
     }
 }
 
@@ -52,8 +44,7 @@ void bedit_switch(Program *p) {
 }
 
 void bedit_render(Program *program, LayerInstances *li, Screen *screen, Gui *gui) {
-    char sPrompt[30];
-    get_prompt(sPrompt, gui->bodyEditor_state);
+    const char* sPrompt = get_prompt(gui->bodyEditor_state);
 
     if (program->state == PROGRAM_STATE_TEXT_INPUT)
         gui->textPos = drw_draw_input_prompt(&li->menuLayer, screen->height / 4,
